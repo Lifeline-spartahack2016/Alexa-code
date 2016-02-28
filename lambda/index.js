@@ -62,13 +62,16 @@ var firebaseTOP;
 /**
  * Called when the session starts.
  */
+
+ var person = "";
 function onSessionStarted(sessionStartedRequest, session) {
 	console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId
 		+ ", sessionId=" + session.sessionId);
 
 	// firebaseTOP = new Firebase("https://lifeline-app.firebaseio.com/Profile/");
 	firebaseTOP = new Firebase("https://lifeline-app.firebaseio.com/678b1f8b-2a27-4b5c-9dfe-b59cbcee74ad/");
-
+	// person = firebaseTOP.val().name;
+	// console.log("person: " + person);
 	// add any session init logic here
 }
 
@@ -195,7 +198,10 @@ function handleHelpRequest(intent, session, callback) {
 	var sessionAttributes = {};
 	var cardTitle = "";
 	var repromptText = "";
-
+	
+	firebaseTOP.once("value", function(snapshot) {
+		console.log(JSON.stringify(snapshot.val()));
+	});
 
 	var speechOutput = "We have notified ";
 
