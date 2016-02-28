@@ -200,6 +200,7 @@ function handleHelpRequest(intent, session, callback) {
 	var repromptText = "";
 	
 	firebaseTOP.once("value", function(snapshot) {
+		console.log("value");
 		console.log(JSON.stringify(snapshot.val()));
 	});
 
