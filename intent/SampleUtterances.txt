@@ -1,0 +1,17 @@
+VerifyInfoIntent verify
+VerifyInfoIntent verify contacts
+VerifyInfoIntent verify numbers
+VerifyInfoIntent verify my alert information
+VerifyInfoIntent verify my alerts
+VerifyInfoIntent verify my information
+VerifyInfoIntent verify the alert information
+VerifyInfoIntent verify the information
+VerifyInfoIntent verify the alert
+
+HelpIntent call
+HelpIntent call everyone
+HelpIntent alert
+HelpIntent call {Person}
+HelpIntent alert {Person}
+
+AMAZON.HelpIntent help
