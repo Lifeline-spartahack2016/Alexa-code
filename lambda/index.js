@@ -66,7 +66,8 @@ function onSessionStarted(sessionStartedRequest, session) {
 	console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId
 		+ ", sessionId=" + session.sessionId);
 
-	firebaseTOP = new Firebase("https://lifeline-app2.firebaseio.com/Profile/");
+	// firebaseTOP = new Firebase("https://lifeline-app.firebaseio.com/Profile/");
+	firebaseTOP = new Firebase("https://lifeline-app.firebaseio.com/678b1f8b-2a27-4b5c-9dfe-b59cbcee74ad/");
 
 	// add any session init logic here
 }
@@ -153,12 +154,12 @@ function getWelcomeResponse(callback) {
 
 function handleVerifyRequest(intent, session, callback) {
 	console.log("verify ---------");
-	var speechOutput = "Verify request: Lifeline will call ";
+	var speechOutput = "In case of an emergency, Lifeline will call ";
 	var sessionAttributes = {};
 	var cardTitle = "";
 	var repromptText = "";
 
-	var myFirebaseRef = firebaseTOP.child("1").child("contacts");
+	var myFirebaseRef = firebaseTOP.child("contacts");
 
 	myFirebaseRef.once("value", function(snapshot) {
 		console.log(snapshot.val());
@@ -187,7 +188,7 @@ function handleVerifyRequest(intent, session, callback) {
 	});
 
 }
-var numDone = 0;
+var numDone = 0, total = 5;
 function handleHelpRequest(intent, session, callback) {
 
 	var person = intent.slots.Person;
@@ -196,9 +197,9 @@ function handleHelpRequest(intent, session, callback) {
 	var repromptText = "";
 
 
-	var speechOutput = "handling help request.   <break time=\"2s\"/>";
+	var speechOutput = "We have notified ";
 
-	var myFirebaseRef = new Firebase("https://lifeline-app2.firebaseio.com/Profile/1").child("contacts");
+	var myFirebaseRef = firebaseTOP.child("contacts");
 
 	var emgContacts = [];
 
@@ -209,10 +210,11 @@ function handleHelpRequest(intent, session, callback) {
 			emgContacts.push(childSnapshot.val());
 			// console.log("childData: " + childData);
 		});
+		total = emgContacts.length;
 		var isThereAPerson = false;
 		console.log("person: " + JSON.stringify(person));
 		console.log("isThereAPerson: " + isThereAPerson);
-		console.log("value: " + person.value + "a " +("value" in person));
+		console.log("value: " + person.value + "---" +("value" in person));
 
 		if(("value" in person))
 		{
@@ -224,7 +226,7 @@ function handleHelpRequest(intent, session, callback) {
 				{
 
 					isThereAPerson = true;
-					speechOutput += "Calling " + person.value + " for you."
+					speechOutput += " " + person.value + " for you."
 					var phoneNum = '+' + emgContacts[i].number.toString();
 					var body = "Hello " + emgContacts[i].name + "! This is Lifeline, and we have just been notified that"
 					+ " Sid needs your help. Please Help him.";
@@ -237,19 +239,11 @@ function handleHelpRequest(intent, session, callback) {
 					}, 
 						function(err, responseData) { //this function is executed when a response is received from Twilio
 							console.log("done " + i);
-						if (!err) { // "err" is an error received during the request, if any
 
-						// "responseData" is a JavaScript object containing data received from Twilio.
-						// A sample response from sending an SMS message is here (click "JSON" to see how the data appears in JavaScript):
-						// http://www.twilio.com/docs/api/rest/sending-sms#example-1
 
-						// console.log(responseData.from); // outputs "+14506667788"
-						// console.log(responseData.body); // outputs "word to your mother."
-						}
-
-					callback(sessionAttributes,
-						buildSpeechletResponse(cardTitle, speechOutput, repromptText, true));
-				});
+						callback(sessionAttributes,
+							buildSpeechletResponse(cardTitle, speechOutput, repromptText, true));
+					});
 
 					i = emgContacts.length;
 
@@ -299,8 +293,9 @@ function handleHelpRequest(intent, session, callback) {
 					}
 					numDone++;
 					console.log("numDone: " + numDone);
-					if(numDone === 2)
+					if(numDone+1 === total)
 					{
+						console.log("CALLBACK!!");
 						numDone = 0;
 							callback(sessionAttributes,
 						buildSpeechletResponse(cardTitle, speechOutput, repromptText, true));
